@@ -1,14 +1,22 @@
 cmake_minimum_required(VERSION 3.0.2)
 project(cv_bridge)
 
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
+set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+
 find_package(catkin REQUIRED COMPONENTS rosconsole sensor_msgs)
 
 if(NOT ANDROID)
-  find_package(PythonLibs)
+  set(PYTHON_INCLUDE_DIR "/usr/include/python3.6m")
+  set(PYTHON_INCLUDE_DIRS "/usr/include/python3.6m")
+  set(PYTHON_LIBRARY "/usr/lib/aarch64-linux-gnu/libpython3.6m.so")
+  find_package(PythonLibs 3.5 REQUIRED)
 
   if(PYTHONLIBS_VERSION_STRING VERSION_LESS "3.8")
     # Debian Buster
-    find_package(Boost REQUIRED python37)
+    find_package(Boost REQUIRED python3)
+    # find_package(Boost REQUIRED python27)
   else()
     # Ubuntu Focal
     find_package(Boost REQUIRED python)
@@ -17,8 +25,8 @@ else()
 find_package(Boost REQUIRED)
 endif()
 
-set(_opencv_version 4)
-find_package(OpenCV 4 QUIET)
+set(_opencv_version 4.2)
+find_package(OpenCV 4.2 QUIET)
 if(NOT OpenCV_FOUND)
   message(STATUS "Did not find OpenCV 4, trying OpenCV 3")
   set(_opencv_version 3)
@@ -41,6 +49,9 @@ catkin_package(
 )
 
 catkin_python_setup()
+
+set(Boost_INCLUDE_DIRS "${Boost_INCLUDE_DIRS} /usr/include/python3.6m")
+message(STATUS "Boost_INCLUDE_DIRS: ${Boost_INCLUDE_DIRS}")
 
 include_directories(include ${Boost_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
